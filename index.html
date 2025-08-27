@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摸鱼助手 - 上班时间倒数器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Marker Felt', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0px #fff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #556270;
+            font-size: 1.2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            border: 3px solid #ffd166;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            color: #556270;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .time-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .time-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #556270;
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            border-color: #ffd166;
+            outline: none;
+        }
+
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn:hover {
+            background: #ff8e8e;
+            transform: translateY(-3px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .countdown {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .countdown-text {
+            font-size: 1.2rem;
+            color: #556270;
+            margin-bottom: 10px;
+        }
+
+        .countdown-time {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        .lunch-mode .card {
+            background: rgba(255, 241, 118, 0.9);
+            border-color: #ff9e6b;
+        }
+
+        .after-work {
+            text-align: center;
+            display: none;
+        }
+
+        .work-summary {
+            font-size: 1.3rem;
+            color: #556270;
+            margin: 20px 0;
+        }
+
+        .fish {
+            position: absolute;
+            font-size: 30px;
+            z-index: 1;
+            animation: swim linear infinite;
+            user-select: none;
+        }
+
+        /* 鱼从右向左游动 */
+        .fish-1 { 
+            top: 15%; 
+            right: -50px; 
+            animation: swim-left 25s linear infinite;
+            animation-delay: 0s;
+        }
+        .fish-2 { 
+            top: 40%; 
+            right: -80px; 
+            animation: swim-left 35s linear infinite;
+            animation-delay: 5s;
+        }
+        .fish-3 { 
+            top: 70%; 
+            right: -60px; 
+            animation: swim-left 30s linear infinite;
+            animation-delay: 10s;
+        }
+        .fish-4 { 
+            top: 25%; 
+            right: -70px; 
+            animation: swim-left 40s linear infinite;
+            animation-delay: 15s;
+        }
+        .fish-5 { 
+            top: 85%; 
+            right: -90px; 
+            animation: swim-left 28s linear infinite;
+            animation-delay: 20s;
+        }
+
+        @keyframes swim-left {
+            0% { transform: translateX(0) scaleX(1); }
+            100% { transform: translateX(calc(-100vw - 100px)) scaleX(1); }
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        .footer {
+            text-align: center;
+            color: #556270;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+
+        .current-time {
+            text-align: center;
+            color: #556270;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .settings-hidden #settings-card {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .time-selector {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .countdown-time {
+                font-size: 2.5rem;
+            }
+            
+            .fish {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态鱼和气泡背景 -->
+    <div class="fish fish-1">🐠</div>
+    <div class="fish fish-2">🐟</div>
+    <div class="fish fish-3">🐡</div>
+    <div class="fish fish-4">🦈</div>
+    <div class="fish fish-5">🐠</div>
+
+    <div class="container">
+        <header>
+            <h1>摸鱼助手</h1>
+            <div class="subtitle">上班时间倒数器 · 新加坡标准时间 (SGT)</div>
+        </header>
+
+        <main id="app">
+            <div id="current-time" class="current-time">2023/11/15 15:30:45 SGT</div>
+            
+            <div id="settings-card" class="card">
+                <h2 class="card-title">工作时间设置</h2>
+                <div class="time-selector">
+                    <div class="time-group">
+                        <label for="work-type">工作类型</label>
+                        <select id="work-type">
+                            <option value="work">上班</option>
+                            <option value="study">上学</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    <div class="time-group">
+                        <label for="lunch-start">午休开始时间</label>
+                        <input type="time" id="lunch-start" value="12:00">
+                    </div>
+                </div>
+                
+                <div class="time-selector">
+                    <div class="time-group">
+                        <label for="lunch-duration">午休时长(分钟)</label>
+                        <input type="number" id="lunch-duration" value="60" min="0" max="180">
+                    </div>
+                    <div class="time-group">
+                        <label for="start-time">上班时间</label>
+                        <input type="time" id="start-time" value="09:00">
+                    </div>
+                </div>
+                
+                <div class="time-selector">
+                    <div class="time-group">
+                        <label for="end-time">下班时间</label>
+                        <input type="time" id="end-time" value="17:00">
+                    </div>
+                </div>
+                
+                <button id="start-btn" class="btn">开始摸鱼 🐟</button>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">倒计时</h2>
+                <div class="countdown">
+                    <div class="countdown-text">距离下班还有</div>
+                    <div id="countdown-time" class="countdown-time">08:00:00</div>
+                </div>
+                
+                <div class="countdown">
+                    <div class="countdown-text">午休还有</div>
+                    <div id="lunch-countdown" class="countdown-time">04:00:00</div>
+                </div>
+                
+                <button id="lunch-btn" class="btn" style="background: #06d6a0; display: none;">开始午休 🍜</button>
+                <button id="end-work-btn" class="btn" style="background: #118ab2; display: none;">下班啦! 🎉</button>
+            </div>
+
+            <div id="after-work" class="after-work">
+                <div class="card">
+                    <h2 class="card-title">下班快乐!</h2>
+                    <div class="work-summary">
+                        今天工作了 <span id="work-duration">8</span> 小时
+                    </div>
+                    <p>辛苦了，明天继续加油！</p>
+                    <button id="reset-btn" class="btn">重新开始</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>基于新加坡标准时间 (SGT) · 摸鱼愉快!</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建气泡
+            function createBubbles() {
+                const bubblesCount = 15;
+                for (let i = 0; i < bubblesCount; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    
+                    // 随机大小和位置
+                    const size = Math.random() * 30 + 10;
+                    const left = Math.random() * 100;
+                    const animationDelay = Math.random() * 15;
+                    
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${left}%`;
+                    bubble.style.bottom = `${Math.random() * 20}%`;
+                    bubble.style.animationDelay = `${animationDelay}s`;
+                    
+                    document.body.appendChild(bubble);
+                }
+            }
+            
+            createBubbles();
+            
+            // 获取DOM元素
+            const startBtn = document.getElementById('start-btn');
+            const lunchBtn = document.getElementById('lunch-btn');
+            const endWorkBtn = document.getElementById('end-work-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const countdownTime = document.getElementById('countdown-time');
+            const lunchCountdown = document.getElementById('lunch-countdown');
+            const workDuration = document.getElementById('work-duration');
+            const afterWork = document.getElementById('after-work');
+            const startTimeInput = document.getElementById('start-time');
+            const endTimeInput = document.getElementById('end-time');
+            const lunchStartInput = document.getElementById('lunch-start');
+            const lunchDurationInput = document.getElementById('lunch-duration');
+            const currentTimeDisplay = document.getElementById('current-time');
+            const appContainer = document.getElementById('app');
+            const settingsCard = document.getElementById('settings-card');
+            
+            // 设置当前时间为默认上班时间
+            const now = new Date();
+            const sgtOffset = 8 * 60; // SGT is UTC+8
+            const localOffset = now.getTimezoneOffset();
+            const sgtNow = new Date(now.getTime() + (localOffset + sgtOffset) * 60000);
+            
+            // 设置默认时间
+            startTimeInput.value = "09:00";
+            endTimeInput.value = "17:00";
+            lunchStartInput.value = "12:00";
+            
+            let countdownInterval;
+            let lunchCountdownInterval;
+            let timeUpdateInterval;
+            let workStartTime;
+            let workEndTime;
+            let lunchStartTime;
+            let lunchEndTime;
+            let lunchDuration = 60; // 默认午休60分钟
+            
+            // 更新当前时间函数
+            function updateCurrentTime() {
+                const now = new Date();
+                const sgtNow = new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
+                
+                const year = sgtNow.getFullYear();
+                const month = (sgtNow.getMonth() + 1).toString().padStart(2, '0');
+                const day = sgtNow.getDate().toString().padStart(2, '0');
+                const hours = sgtNow.getHours().toString().padStart(2, '0');
+                const minutes = sgtNow.getMinutes().toString().padStart(2, '0');
+                const seconds = sgtNow.getSeconds().toString().padStart(2, '0');
+                
+                currentTimeDisplay.textContent = `${year}/${month}/${day} ${hours}:${minutes}:${seconds} SGT`;
+            }
+            
+            // 初始化当前时间
+            updateCurrentTime();
+            timeUpdateInterval = setInterval(updateCurrentTime, 1000);
+            
+            // 开始摸鱼按钮点击事件
+            startBtn.addEventListener('click', function() {
+                const startTime = startTimeInput.value.split(':');
+                const endTime = endTimeInput.value.split(':');
+                const lunchStart = lunchStartInput.value.split(':');
+                
+                workStartTime = new Date();
+                workStartTime.setHours(parseInt(startTime[0]), parseInt(startTime[1]), 0, 0);
+                
+                workEndTime = new Date();
+                workEndTime.setHours(parseInt(endTime[0]), parseInt(endTime[1]), 0, 0);
+                
+                lunchStartTime = new Date();
+                lunchStartTime.setHours(parseInt(lunchStart[0]), parseInt(lunchStart[1]), 0, 0);
+                
+                lunchDuration = parseInt(lunchDurationInput.value);
+                
+                // 计算午休结束时间
+                lunchEndTime = new Date(lunchStartTime);
+                lunchEndTime.setMinutes(lunchEndTime.getMinutes() + lunchDuration);
+                
+                // 隐藏设置界面
+                appContainer.classList.add('settings-hidden');
+                
+                // 显示其他按钮
+                lunchBtn.style.display = 'block';
+                endWorkBtn.style.display = 'block';
+                
+                // 开始倒计时
+                clearInterval(countdownInterval);
+                countdownInterval = setInterval(updateCountdown, 1000);
+                updateCountdown();
+            });
+            
+            // 开始午休按钮点击事件
+            lunchBtn.addEventListener('click', function() {
+                document.body.classList.add('lunch-mode');
+                lunchBtn.style.display = 'none';
+                
+                // 午休倒计时
+                clearInterval(lunchCountdownInterval);
+                lunchCountdownInterval = setInterval(updateLunchCountdown, 1000);
+                updateLunchCountdown();
+            });
+            
+            // 下班按钮点击事件
+            endWorkBtn.addEventListener('click', function() {
+                clearInterval(countdownInterval);
+                clearInterval(lunchCountdownInterval);
+                
+                // 计算工作时长
+                const now = new Date();
+                const workMs = now - workStartTime;
+                const workHours = (workMs / (1000 * 60 * 60) - lunchDuration/60).toFixed(1);
+                
+                workDuration.textContent = workHours;
+                
+                // 显示下班界面
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.display = 'none';
+                });
+                afterWork.style.display = 'block';
+            });
+            
+            // 重置按钮点击事件
+            resetBtn.addEventListener('click', function() {
+                document.body.classList.remove('lunch-mode');
+                afterWork.style.display = 'none';
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.display = 'block';
+                });
+                
+                appContainer.classList.remove('settings-hidden');
+                startBtn.style.display = 'block';
+                lunchBtn.style.display = 'none';
+                endWorkBtn.style.display = 'none';
+                
+                countdownTime.textContent = '08:00:00';
+                lunchCountdown.textContent = '04:00:00';
+            });
+            
+            // 更新倒计时函数
+            function updateCountdown() {
+                const now = new Date();
+                const timeLeft = workEndTime - now;
+                
+                if (timeLeft <= 0) {
+                    countdownTime.textContent = '00:00:00';
+                    clearInterval(countdownInterval);
+                    return;
+                }
+                
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                countdownTime.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // 自动开始午休
+                if (now >= lunchStartTime && now < lunchEndTime && !document.body.classList.contains('lunch-mode')) {
+                    document.body.classList.add('lunch-mode');
+                    lunchBtn.style.display = 'none';
+                    
+                    // 开始午休倒计时
+                    clearInterval(lunchCountdownInterval);
+                    lunchCountdownInterval = setInterval(updateLunchCountdown, 1000);
+                    updateLunchCountdown();
+                }
+                
+                // 更新午休倒计时（如果还没开始午休）
+                if (now < lunchStartTime) {
+                    const timeToLunch = lunchStartTime - now;
+                    const lunchHours = Math.floor(timeToLunch / (1000 * 60 * 60));
+                    const lunchMinutes = Math.floor((timeToLunch % (1000 * 60 * 60)) / (1000 * 60));
+                    const lunchSeconds = Math.floor((timeToLunch % (1000 * 60)) / 1000);
+                    
+                    lunchCountdown.textContent = `${lunchHours.toString().padStart(2, '0')}:${lunchMinutes.toString().padStart(2, '0')}:${lunchSeconds.toString().padStart(2, '0')}`;
+                }
+            }
+            
+            // 更新午休倒计时函数
+            function updateLunchCountdown() {
+                const now = new Date();
+                const timeLeft = lunchEndTime - now;
+                
+                if (timeLeft <= 0) {
+                    lunchCountdown.textContent = '午休结束!';
+                    document.body.classList.remove('lunch-mode');
+                    clearInterval(lunchCountdownInterval);
+                    return;
+                }
+                
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                lunchCountdown.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        });
+    </script>
+</body>
+</html>
