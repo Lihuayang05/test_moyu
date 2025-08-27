@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Comic Sans MS', 'Marker Felt', 'Nunito', sans-serif;
+            font-family: 'Comic Sans MS', 'Marker Felt', sans-serif;
         }
 
         body {
@@ -67,13 +67,13 @@
 
         .time-selector {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            justify-content: space-between;
             margin-bottom: 20px;
+            gap: 15px;
         }
 
         .time-group {
-            width: 100%;
+            flex: 1;
         }
 
         label {
@@ -235,46 +235,14 @@
             display: none;
         }
 
-        .click-counter {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .clicker-btn {
-            font-size: 3rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-block;
-        }
-
-        .clicker-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .clicker-btn:active {
-            transform: scale(0.9);
-        }
-
-        .click-count {
-            font-size: 1.2rem;
-            color: #556270;
-            margin-top: 10px;
-        }
-
-        .dynamic-text {
-            transition: all 0.3s;
-        }
-
-        .work-type-text {
-            color: #ff6b6b;
-            font-weight: bold;
-        }
-
         @media (max-width: 600px) {
             h1 {
                 font-size: 2rem;
+            }
+            
+            .time-selector {
+                flex-direction: column;
+                gap: 15px;
             }
             
             .countdown-time {
@@ -284,8 +252,7 @@
             .fish {
                 font-size: 24px;
             }
-            
-            .clicker-btn {
+             .clicker-btn {
                 font-size: 2.5rem;
             }
         }
@@ -302,7 +269,7 @@
     <div class="container">
         <header>
             <h1>摸鱼助手</h1>
-            <div class="subtitle">工作时间倒数器 · 新加坡标准时间 (SGT)</div>
+            <div class="subtitle">上班时间倒数器 · 新加坡标准时间 (SGT)</div>
         </header>
 
         <main id="app">
@@ -312,31 +279,33 @@
                 <h2 class="card-title">工作时间设置</h2>
                 <div class="time-selector">
                     <div class="time-group">
-                        <label for="work-type">类型</label>
+                        <label for="work-type">工作类型</label>
                         <select id="work-type">
                             <option value="work">上班</option>
                             <option value="study">上学</option>
                             <option value="other">其他</option>
                         </select>
                     </div>
-                    
-                    <div class="time-group">
-                        <label for="start-time">开始时间</label>
-                        <input type="time" id="start-time" value="09:00">
-                    </div>
-                    
                     <div class="time-group">
                         <label for="lunch-start">午休开始时间</label>
                         <input type="time" id="lunch-start" value="12:00">
                     </div>
-                    
+                </div>
+                
+                <div class="time-selector">
                     <div class="time-group">
                         <label for="lunch-duration">午休时长(分钟)</label>
                         <input type="number" id="lunch-duration" value="60" min="0" max="180">
                     </div>
-                    
                     <div class="time-group">
-                        <label for="end-time">结束时间</label>
+                        <label for="start-time">上班时间</label>
+                        <input type="time" id="start-time" value="09:00">
+                    </div>
+                </div>
+                
+                <div class="time-selector">
+                    <div class="time-group">
+                        <label for="end-time">下班时间</label>
                         <input type="time" id="end-time" value="18:00">
                     </div>
                 </div>
@@ -347,7 +316,7 @@
             <div class="card">
                 <h2 class="card-title">倒计时</h2>
                 <div class="countdown">
-                    <div class="countdown-text">距离<span class="work-type-text" id="end-text">下班</span>还有</div>
+                    <div class="countdown-text">距离下班还有</div>
                     <div id="countdown-time" class="countdown-time">08:00:00</div>
                 </div>
                 
@@ -356,22 +325,16 @@
                     <div id="lunch-countdown" class="countdown-time">04:00:00</div>
                 </div>
                 
-                <div class="click-counter">
-                    <button id="clicker-btn" class="clicker-btn">🐟</button>
-                    <div class="click-count">今日摸鱼次数: <span id="click-count">0</span></div>
-                </div>
-                
                 <button id="lunch-btn" class="btn" style="background: #06d6a0; display: none;">开始午休 🍜</button>
                 <button id="end-work-btn" class="btn" style="background: #118ab2; display: none;">下班啦! 🎉</button>
             </div>
 
             <div id="after-work" class="after-work">
                 <div class="card">
-                    <h2 class="card-title"><span id="finish-text">下班</span>快乐!</h2>
+                    <h2 class="card-title">下班快乐!</h2>
                     <div class="work-summary">
-                        今天<span class="work-type-text" id="summary-text">工作</span>了 <span id="work-duration">8</span> 小时
+                        今天工作了 <span id="work-duration">8</span> 小时
                     </div>
-                    <div class="click-count">今日摸鱼次数: <span id="final-click-count">0</span></div>
                     <p>辛苦了，明天继续加油！</p>
                     <button id="reset-btn" class="btn">重新开始</button>
                 </div>
@@ -425,13 +388,6 @@
             const currentTimeDisplay = document.getElementById('current-time');
             const appContainer = document.getElementById('app');
             const settingsCard = document.getElementById('settings-card');
-            const workTypeSelect = document.getElementById('work-type');
-            const endText = document.getElementById('end-text');
-            const finishText = document.getElementById('finish-text');
-            const summaryText = document.getElementById('summary-text');
-            const clickerBtn = document.getElementById('clicker-btn');
-            const clickCountDisplay = document.getElementById('click-count');
-            const finalClickCountDisplay = document.getElementById('final-click-count');
             
             // 设置当前时间为默认上班时间
             const now = new Date();
@@ -451,9 +407,7 @@
             let workEndTime;
             let lunchStartTime;
             let lunchEndTime;
-            let lunchDuration = 60;
-            let clickCount = 0;
-            let workType = "work";
+            let lunchDuration = 60; // 默认午休60分钟
             
             // 更新当前时间函数
             function updateCurrentTime() {
@@ -473,56 +427,6 @@
             // 初始化当前时间
             updateCurrentTime();
             timeUpdateInterval = setInterval(updateCurrentTime, 1000);
-            
-            // 更新工作类型文本
-            function updateWorkTypeText() {
-                workType = workTypeSelect.value;
-                let endWord, finishWord, summaryWord;
-                
-                switch(workType) {
-                    case "study":
-                        endWord = "放学";
-                        finishWord = "放学";
-                        summaryWord = "学习";
-                        break;
-                    case "other":
-                        endWord = "结束";
-                        finishWord = "完成";
-                        summaryWord = "活动";
-                        break;
-                    default:
-                        endWord = "下班";
-                        finishWord = "下班";
-                        summaryWord = "工作";
-                }
-                
-                endText.textContent = endWord;
-                finishText.textContent = finishWord;
-                summaryText.textContent = summaryWord;
-            }
-            
-            // 监听工作类型变化
-            workTypeSelect.addEventListener('change', updateWorkTypeText);
-            
-            // 初始化工作类型文本
-            updateWorkTypeText();
-            
-            // 点击计数功能
-            clickerBtn.addEventListener('click', function() {
-                clickCount++;
-                clickCountDisplay.textContent = clickCount;
-                
-                // 添加动画效果
-                clickerBtn.style.transform = 'scale(0.9)';
-                setTimeout(() => {
-                    clickerBtn.style.transform = 'scale(1)';
-                }, 100);
-                
-                // 随机更换表情
-                const fishEmojis = ['🐟', '🐠', '🐡', '🦈', '🐬', '🐳', '🐋'];
-                const randomEmoji = fishEmojis[Math.floor(Math.random() * fishEmojis.length)];
-                clickerBtn.textContent = randomEmoji;
-            });
             
             // 开始摸鱼按钮点击事件
             startBtn.addEventListener('click', function() {
@@ -580,7 +484,6 @@
                 const workHours = (workMs / (1000 * 60 * 60) - lunchDuration/60).toFixed(1);
                 
                 workDuration.textContent = workHours;
-                finalClickCountDisplay.textContent = clickCount;
                 
                 // 显示下班界面
                 document.querySelectorAll('.card').forEach(card => {
@@ -604,11 +507,6 @@
                 
                 countdownTime.textContent = '08:00:00';
                 lunchCountdown.textContent = '04:00:00';
-                
-                // 重置点击计数
-                clickCount = 0;
-                clickCountDisplay.textContent = '0';
-                clickerBtn.textContent = '🐟';
             });
             
             // 更新倒计时函数
